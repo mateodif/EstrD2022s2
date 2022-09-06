@@ -191,8 +191,11 @@ cantidadDePokemonDe t (E _ p1 p2) = tipoAInt ((tipoDePokemon p1) t) + tipoAInt (
 
 -----------------------
 
+pokemonesDeEntrenador :: Entrenador -> [Pokemon]
+pokemonesDeEntrenador (E _ p1 p2) = [p1, p2]
+
 juntarPokemon :: (Entrenador, Entrenador) -> [Pokemon]
-juntarPokemon (E _ p1 p2) (E _ p3 p4) = [p1 p2 p3 p4]
+juntarPokemon (e1, e2) = pokemonesDeEntrenador e1 ++ pokemonesDeEntrenador e2
 
 ------------------------
 
