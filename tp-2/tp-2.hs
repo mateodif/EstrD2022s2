@@ -147,7 +147,6 @@ sumaDeEdadesDePersonas :: [Persona] -> Int
 sumaDeEdadesDePersonas [] = 0
 sumaDeEdadesDePersonas (x : xs) = edadDePersona x + sumaDeEdadesDePersonas xs
 
-
 promedioEdad :: [Persona] -> Int
 promedioEdad l = div (sumaDeEdadesDePersonas l) (longitud l)
 
@@ -168,8 +167,7 @@ obtenerPersonaSegunEdad n (x:xs) = if edadDePersona x == n then x else obtenerPe
 elMasViejo :: [Persona] -> Persona
 elMasViejo l = obtenerPersonaSegunEdad (elMaximo (edadesDePersonas l)) l
 
-esMayorQue :: Persona -> Persona -> Bool
-esMayorQue p1 p2 = edadDePersona p1 > edadDePersona p2
+-------------------------
 
 data TipoDePokemon = Agua | Fuego | Planta
 
@@ -208,7 +206,10 @@ losQueLeGanan t e1 e2 =
     then 1
     else 0 + losQueLeGanan t (entrenadorSinPrimerPokemon e1) (entrenadorSinPrimerPokemon e2)
 
--- hayPokemonEnLista :: TipoDePokemon -> [Pokemon]
+
+hayTipoDePokemonEnLista :: TipoDePokemon -> [Pokemon] -> Bool
+hayTipoDePokemonEnLista _ [] = False
+hayTipoDePokemonEnLista t (p:ps) = esMismoTipoDePokemon t (tipoDePokemon p) || hayTipoDePokemonEnLista t ps
 
 -- Dado un entrenador, devuelve True si posee al menos un Pokémon de cada tipo posible.
 -- esMaestroPokemon :: Entrenador -> Bool

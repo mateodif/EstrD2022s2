@@ -178,15 +178,18 @@ superaA (Poke t1 _) (Poke t2 _) = esSuperior t1 t2
 tipoDePokemon :: Pokemon -> TipoDePokemon
 tipoDePokemon (Poke t _) = t
 
+esMismoTipoDePokemon :: TipoDePokemon -> TipoDePokemon -> Bool
+esMismoTipoDePokemon Fuego  Fuego  = True
+esMismoTipoDePokemon Agua   Agua   = True
+esMismoTipoDePokemon Planta Planta = True
+esMismoTipoDePokemon _      _      = False
+
 unoSiMismoTipoDePokemonCeroSino :: TipoDePokemon -> TipoDePokemon -> Int
-unoSiMismoTipoDePokemonCeroSino Fuego  Fuego  = 1
-unoSiMismoTipoDePokemonCeroSino Agua   Agua   = 1
-unoSiMismoTipoDePokemonCeroSino Planta Planta = 1
-unoSiMismoTipoDePokemonCeroSino _      _      = 0
+unoSiMismoTipoDePokemonCeroSino t1 t2 = if esMismoTipoDePokemon t1 t2 then 1 else 0
 
 cantidadDePokemonDe :: TipoDePokemon -> Entrenador -> Int
 cantidadDePokemonDe t (E _ p1 p2) =
-  unoSiMismoPokemonCeroSino (tipoDePokemon p1) t + unoSiMismoPokemonCeroSino (tipoDePokemon p2) t
+  unoSiMismoTipoDePokemonCeroSino (tipoDePokemon p1) t + unoSiMismoTipoDePokemonCeroSino (tipoDePokemon p2) t
 
 -----------------------
 
