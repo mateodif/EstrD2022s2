@@ -110,7 +110,7 @@ implica _ _ = True
 ----------------
 
 yTambien :: Bool -> Bool -> Bool
-yTambien True True = True
+yTambien True a = a
 yTambien _ _ = False
 
 -----------------
