@@ -19,10 +19,10 @@ maxDelPar (a, b) = if a > b
                      else b
 
 -- Ejemplos
-sumar (maxDePar (divisionYResto 16 2)) (sucesor 1)
-sumar (sucesor 5) (maxDePar (divisionYResto 10 2))
-sumar (sucesor (maxDePar (divisionYResto 8 2))) 5
-sucesor (maxDePar (divisionYResto (sumar 17 1) 2))
+-- sumar (maxDePar (divisionYResto 16 2)) (sucesor 1)
+-- sumar (sucesor 5) (maxDePar (divisionYResto 10 2))
+-- sumar (sucesor (maxDePar (divisionYResto 8 2))) 5
+-- sucesor (maxDePar (divisionYResto (sumar 17 1) 2))
 
 --------
 
@@ -57,7 +57,7 @@ siguiente Norte = Oeste
 
 -------------
 
-data DiaDeSemana = Lunes | Martes | Miércoles | Jueves | Viernes | Sabado | Domingo
+data DiaDeSemana = Lunes | Martes | Miercoles | Jueves | Viernes | Sabado | Domingo
     deriving Show
 
 primeroYUltimoDia :: (DiaDeSemana, DiaDeSemana)
@@ -67,7 +67,7 @@ primeroYUltimoDia = (Lunes, Domingo)
 
 empiezaConM :: DiaDeSemana -> Bool
 empiezaConM Martes = True
-empiezaConM Miércoles = True
+empiezaConM Miercoles = True
 empiezaConM _ = False
 
 ---------------
@@ -75,7 +75,7 @@ empiezaConM _ = False
 numeroDeDia :: DiaDeSemana -> Int
 numeroDeDia Lunes = 1
 numeroDeDia Martes = 2
-numeroDeDia Miércoles = 3
+numeroDeDia Miercoles = 3
 numeroDeDia Jueves = 4
 numeroDeDia Viernes = 5
 numeroDeDia Sabado = 6
