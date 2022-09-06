@@ -9,7 +9,7 @@ sumar a b = a + b
 --------
 
 divisionYResto :: Int -> Int -> (Int, Int)
-divisionYResto a b = ((div a b), (mod a b))
+divisionYResto a b = (div a b, mod a b)
 
 --------
 
@@ -82,7 +82,7 @@ numeroDeDia Sabado = 6
 numeroDeDia Domingo = 7
 
 vieneDespues :: DiaDeSemana -> DiaDeSemana -> Bool
-vieneDespues a b = (numeroDeDia a) > (numeroDeDia b)
+vieneDespues a b = numeroDeDia a > numeroDeDia b
 
 --------------
 
@@ -136,24 +136,22 @@ edad (P _ e) = e
 -----------------
 
 crecer :: Persona -> Persona
-crecer (P n e) = (P n (sucesor e))
+crecer (P n e) = P n (sucesor e)
 
 -----------------
 
 cambioDeNombre :: String -> Persona -> Persona
-cambioDeNombre nombreNuevo (P _ e) = (P nombreNuevo e)
+cambioDeNombre nombreNuevo (P _ e) = P nombreNuevo e
 
 ------------------
 
 esMayorQueLaOtra :: Persona -> Persona -> Bool
-esMayorQueLaOtra p1 p2 = (edad p1) > (edad p2)
+esMayorQueLaOtra p1 p2 = edad p1 > edad p2
 
 ------------------
 
 laQueEsMayor :: Persona -> Persona -> Persona
-laQueEsMayor p1 p2 = if (esMayorQueLaOtra p1 p2)
-                         then p1
-                         else p2
+laQueEsMayor p1 p2 = if esMayorQueLaOtra p1 p2 then p1 else p2
 
 -------------------
 
@@ -173,7 +171,7 @@ esSuperior Planta Agua = True
 esSuperior _ _ = False
 
 superaA :: Pokemon -> Pokemon -> Bool
-superaA (Poke t1 _) (Poke t2 _) = (esSuperior t1 t2)
+superaA (Poke t1 _) (Poke t2 _) = esSuperior t1 t2
 
 ----------------------
 
