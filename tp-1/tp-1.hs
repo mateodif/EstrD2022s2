@@ -14,9 +14,10 @@ divisionYResto a b = (div a b, mod a b)
 --------
 
 maxDelPar :: (Int, Int) -> Int
-maxDelPar (a, b) = if a > b
-                     then a
-                     else b
+maxDelPar (a, b) =
+  if a > b
+    then a
+    else b
 
 -- Ejemplos
 -- sumar (maxDePar (divisionYResto 16 2)) (sucesor 1)
@@ -41,18 +42,18 @@ opuesto Este = Oeste
 
 iguales :: Dir -> Dir -> Bool
 iguales Norte Norte = True
-iguales Sur Sur = True
+iguales Sur   Sur   = True
 iguales Oeste Oeste = True
-iguales Este Este = True
-iguales _ _ = False
+iguales Este  Este  = True
+iguales _     _     = False
 
 --------------
 
 -- Precondición: no debe ser Oeste?
 -- Es una función parcial porque posee una precondición
 siguiente :: Dir -> Dir
-siguiente Sur = Este
-siguiente Este = Norte
+siguiente Sur   = Este
+siguiente Este  = Norte
 siguiente Norte = Oeste
 
 -------------
@@ -66,20 +67,20 @@ primeroYUltimoDia = (Lunes, Domingo)
 -------------
 
 empiezaConM :: DiaDeSemana -> Bool
-empiezaConM Martes = True
+empiezaConM Martes    = True
 empiezaConM Miercoles = True
-empiezaConM _ = False
+empiezaConM _         = False
 
 ---------------
 
 numeroDeDia :: DiaDeSemana -> Int
-numeroDeDia Lunes = 1
-numeroDeDia Martes = 2
+numeroDeDia Lunes     = 1
+numeroDeDia Martes    = 2
 numeroDeDia Miercoles = 3
-numeroDeDia Jueves = 4
-numeroDeDia Viernes = 5
-numeroDeDia Sabado = 6
-numeroDeDia Domingo = 7
+numeroDeDia Jueves    = 4
+numeroDeDia Viernes   = 5
+numeroDeDia Sabado    = 6
+numeroDeDia Domingo   = 7
 
 vieneDespues :: DiaDeSemana -> DiaDeSemana -> Bool
 vieneDespues a b = numeroDeDia a > numeroDeDia b
@@ -87,15 +88,15 @@ vieneDespues a b = numeroDeDia a > numeroDeDia b
 --------------
 
 estaEnElMedio :: DiaDeSemana -> Bool
-estaEnElMedio Lunes = False
+estaEnElMedio Lunes   = False
 estaEnElMedio Domingo = False
-estaEnElMedio _ = True
+estaEnElMedio _       = True
 
 ---------------
 
 negar :: Bool -> Bool
 negar True = False
-negar _ = True
+negar _    = True
 
 ----------------
 -- Dados dos booleanos, si el primero es True y el segundo es False, devuelve False, sino
@@ -105,19 +106,19 @@ negar _ = True
 
 implica :: Bool -> Bool -> Bool
 implica True False = False
-implica _ _ = True
+implica _    _     = True
 
 ----------------
 
 yTambien :: Bool -> Bool -> Bool
 yTambien True a = a
-yTambien _ _ = False
+yTambien _    _ = False
 
 -----------------
 
 oBien :: Bool -> Bool -> Bool
 oBien True a = True
-oBien _ _ = False
+oBien _    _ = False
 
 -----------------
 
@@ -164,10 +165,10 @@ data Entrenador = E String Pokemon Pokemon
    deriving Show
 
 esSuperior :: TipoDePokemon -> TipoDePokemon -> Bool
-esSuperior Agua Fuego = True
-esSuperior Fuego Planta = True
-esSuperior Planta Agua = True
-esSuperior _ _ = False
+esSuperior Agua   Fuego  = True
+esSuperior Fuego  Planta = True
+esSuperior Planta Agua   = True
+esSuperior _      _      = False
 
 superaA :: Pokemon -> Pokemon -> Bool
 superaA (Poke t1 _) (Poke t2 _) = esSuperior t1 t2
@@ -178,10 +179,10 @@ tipoDePokemon :: Pokemon -> TipoDePokemon
 tipoDePokemon (Poke t _) = t
 
 unoSiMismoPokemonCeroSino :: TipoDePokemon -> TipoDePokemon -> Int
-unoSiMismoPokemonCeroSino Fuego Fuego = 1
-unoSiMismoPokemonCeroSino Agua Agua = 1
+unoSiMismoPokemonCeroSino Fuego  Fuego  = 1
+unoSiMismoPokemonCeroSino Agua   Agua   = 1
 unoSiMismoPokemonCeroSino Planta Planta = 1
-unoSiMismoPokemonCeroSino _ _ = 0
+unoSiMismoPokemonCeroSino _      _      = 0
 
 cantidadDePokemonDe :: TipoDePokemon -> Entrenador -> Int
 cantidadDePokemonDe t (E _ p1 p2) =
@@ -214,19 +215,19 @@ swap (a, b) = (b, a)
 
 estaVacia :: [a] -> Bool
 estaVacia [] = True
-estaVacia _ = False
+estaVacia _  = False
 
 -----------------
 
 elPrimero :: [a] -> a
-elPrimero (x : _) = x
+elPrimero (x:_) = x
 
 -----------------
 
 sinElPrimero :: [a] -> [a]
-sinElPrimero (_ : xs) = xs
+sinElPrimero (_:xs) = xs
 
 -----------------
 
 splitHead :: [a] -> (a, [a])
-splitHead (x : xs) = (x, xs)
+splitHead (x:xs) = (x, xs)
