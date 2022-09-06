@@ -1,35 +1,7 @@
--- NOTE: No se si permiten hacer esto. Son mis helpers.
--- Casi todos los ejercicios se pueden resolver con versiones
--- genericas de foldr pero me parece que me estoy yendo de tema...
-
--- Voy a poner las soluciones normales en comentarios, asi lo puedo
--- revertir rapido por las dudas
-
--- INICIO HELPERS
-compararSegunFuncion :: (a -> a -> Bool) -> [a] -> a
-compararSegunFuncion _ [x] = x
-compararSegunFuncion f (x : xs) =
-  if f x (compararSegunFuncion f xs)
-    then x
-    else compararSegunFuncion f xs
-
--- esta funcion es analoga a "map"
-miMap :: (a -> b) -> [a] -> [b]
-miMap _ [] = []
-miMap f (x : xs) = f x : miMap f xs
-
--- esta funcion es analoga a "reduce"
-reducir :: (a -> b -> b) -> b -> [a] -> b
-reducir f z [] = z
-reducir f z (x : xs) = f x (reducir f z xs)
-
--- FIN HELPERS
-
 -- Dada una lista de enteros devuelve la suma de todos sus elementos.
 sumatoria :: [Int] -> Int
--- sumatoria []     = 0
--- sumatoria (x:xs) = x + sumatoria xs
-sumatoria = reducir (+) 0
+sumatoria []     = 0
+sumatoria (x:xs) = x + sumatoria xs
 
 -- Dada una lista de elementos de algún tipo devuelve el largo de esa lista, es decir, la cantidad
 -- de elementos que posee.
@@ -37,34 +9,29 @@ sumarUno :: a -> Int -> Int
 sumarUno x y = y + 1
 
 longitud :: [a] -> Int
--- longitud []     = 0
--- longitud (x:xs) = 1 + longitud xs
-longitud = reducir sumarUno 0
+longitud []     = 0
+longitud (x:xs) = 1 + longitud xs
 
 -- Dada una lista de enteros, devuelve la lista de los sucesores de cada entero.
 sucesores :: [Int] -> [Int]
--- sucesores []     = []
--- sucesores (x:xs) = (x + 1) : (sucesores xs)
-sucesores = miMap sucesor
+sucesores []     = []
+sucesores (x:xs) = (x + 1) : (sucesores xs)
 
 -- Dada una lista de booleanos devuelve True si todos sus elementos son True.
 -- Precondición: la lista no debe ser vacía
 conjuncion :: [Bool] -> Bool
--- conjuncion [] = True
--- conjuncion (x : xs) = x && conjuncion xs
-conjuncion = reducir (&&) True
+conjuncion [] = True
+conjuncion (x : xs) = x && conjuncion xs
 
 -- Dada una lista de booleanos devuelve True si alguno de sus elementos es True.
 disyuncion :: [Bool] -> Bool
--- disyuncion [] = False
--- disyuncion (x : xs) = x || disyuncion xs
-disyuncion = reducir (||) False
+disyuncion [] = False
+disyuncion (x : xs) = x || disyuncion xs
 
 -- Dada una lista de listas, devuelve una única lista con todos sus elementos.
 aplanar :: [[a]] -> [a]
--- aplanar [] = []
--- aplanar (x : xs) = x ++ aplanar xs
-aplanar = reducir (++) []
+aplanar [] = []
+aplanar (x : xs) = x ++ aplanar xs
 
 -- Dados un elemento e y una lista xs devuelve True si existe un elemento en xs que sea igual
 -- a e.
@@ -97,9 +64,8 @@ lasDeLongitudMayorA n (x : xs) =
 -- Dados una lista y un elemento, devuelve una lista con ese elemento agregado al final de la
 -- lista
 agregarAlFinal :: [a] -> a -> [a]
--- agregarAlFinal [] a = [a]
--- agregarAlFinal (x : xs) a = x : agregarAlFinal xs a
-agregarAlFinal xs a = reducir (:) [a] xs
+agregarAlFinal [] a = [a]
+agregarAlFinal (x : xs) a = x : agregarAlFinal xs a
 
 -- Dadas dos listas devuelve la lista con todos los elementos de la primera lista y todos los
 -- elementos de la segunda a continuación. Definida en Haskell como (++).
@@ -117,30 +83,20 @@ reversa (x : xs) = agregar (reversa xs) [x]
 -- Dadas dos listas de enteros, devuelve una lista donde el elemento en la posición n es el
 -- máximo entre el elemento n de la primera lista y de la segunda lista, teniendo en cuenta que
 -- las listas no necesariamente tienen la misma longitud.
-
 maximoEntreDos :: Int -> Int -> Int
 maximoEntreDos a b = if a > b then a else b
 
-zipCon :: (a -> b -> c) -> [a] -> [b] -> [c]
-zipCon f (x : xs) (y : ys) = f x y : zipCon f xs ys
-zipCon _ _ _ = []
-
 zipMaximos :: [Int] -> [Int] -> [Int]
--- zipMaximos []       []     = []
--- zipMaximos []       _      = []
--- zipMaximos _        []     = []
--- zipMaximos (x:xs)   (y:ys) = agregar [maximoEntreDos x y] (zipMaximos xs ys)
-zipMaximos = zipCon maximoEntreDos
+zipMaximos []       []     = []
+zipMaximos []       _      = []
+zipMaximos _        []     = []
+zipMaximos (x:xs)   (y:ys) = agregar [maximoEntreDos x y] (zipMaximos xs ys)
 
 -- Dada una lista devuelve el mínimo
 -- Precondicion: debe contener al menos un elemento
-
--- elMinimo :: Ord a => [a] -> a
--- elMinimo [x]    = x
--- elMinimo (x:xs) = if x < elMinimo xs then x else elMinimo xs
-
 elMinimo :: Ord a => [a] -> a
-elMinimo = compararSegunFuncion (<)
+elMinimo [x]    = x
+elMinimo (x:xs) = min x (elMinimo xs)
 
 -- Dado un número n se devuelve la multiplicación de este número y todos sus anteriores hasta
 -- llegar a 0. Si n es 0 devuelve 1. La función es parcial si n es negativo.
@@ -188,37 +144,32 @@ mayoresA n (x : xs) = if edadDePersona x > n then x : mayoresA n xs else mayores
 
 -- Dada una lista de personas devuelve el promedio de edad entre esas personas. Precondición: la lista al menos posee una persona.
 sumaDeEdadesDePersonas :: [Persona] -> Int
--- sumaDeEdadesDePersonas [] = 0
--- sumaDeEdadesDePersonas (x : xs) = edadDePersona x + sumaDeEdadesDePersonas xs
-sumaDeEdadesDePersonas ps = reducir (+) 0 (miMap edadDePersona ps)
+sumaDeEdadesDePersonas [] = 0
+sumaDeEdadesDePersonas (x : xs) = edadDePersona x + sumaDeEdadesDePersonas xs
 
 
 promedioEdad :: [Persona] -> Int
-promedioEdad [] = 0
 promedioEdad l = div (sumaDeEdadesDePersonas l) (longitud l)
 
 -- Dada una lista de personas devuelve la persona más vieja de la lista.
 -- Precondición: la lista al menos posee una persona
--- elMaximo :: Ord a => [a] -> a
--- elMaximo [x]    = x
--- elMaximo (x:xs) = if x > elMaximo xs then x else elMaximo xs
+elMaximo :: Ord a => [a] -> a
+elMaximo [x]    = x
+elMaximo (x:xs) = max x (elMaximo xs)
 
--- edadesDePersonas :: [Persona] -> [Int]
--- edadesDePersonas [] = []
--- edadesDePersonas (x:xs) = edadDePersona x : edadesDePersonas xs
+edadesDePersonas :: [Persona] -> [Int]
+edadesDePersonas [] = []
+edadesDePersonas (x:xs) = edadDePersona x : edadesDePersonas xs
 
--- obtenerPersonaSegunEdad :: Int -> [Persona] -> Persona
--- obtenerPersonaSegunEdad _ [] = error "No existe una persona con la edad dada"
--- obtenerPersonaSegunEdad n (x:xs) = if edadDePersona x == n then x else obtenerPersonaSegunEdad n xs
+obtenerPersonaSegunEdad :: Int -> [Persona] -> Persona
+obtenerPersonaSegunEdad _ [] = error "No existe una persona con la edad dada"
+obtenerPersonaSegunEdad n (x:xs) = if edadDePersona x == n then x else obtenerPersonaSegunEdad n xs
 
--- elMasViejo :: [Persona] -> Persona
--- elMasViejo l = obtenerPersonaSegunEdad (elMaximo (edadesDePersonas l)) l
+elMasViejo :: [Persona] -> Persona
+elMasViejo l = obtenerPersonaSegunEdad (elMaximo (edadesDePersonas l)) l
 
 esMayorQue :: Persona -> Persona -> Bool
 esMayorQue p1 p2 = edadDePersona p1 > edadDePersona p2
-
-elMasViejo :: [Persona] -> Persona
-elMasViejo = compararSegunFuncion esMayorQue
 
 data TipoDePokemon = Agua | Fuego | Planta
 
@@ -230,18 +181,34 @@ data Entrenador = ConsEntrenador String [Pokemon]
 pokemonesDeEntrenador :: Entrenador -> [Pokemon]
 pokemonesDeEntrenador (ConsEntrenador _ ps) = ps
 
-cantPokemon :: Entrenador -> Int
-cantPokemon e = longitud (pokemonesDeEntrenador e)
+tipoDePokemon :: Pokemon -> TipoDePokemon
+tipoDePokemon (ConsPokemon t _) = t
 
--- TODO
+tiposDePokemones :: [Pokemon] -> [TipoDePokemon]
+tiposDePokemones []     = []
+tiposDePokemones (p:ps) = tipoDePokemon p : (tiposDePokemones ps)
 
--- Devuelve la cantidad de Pokémon de determinado tipo que posee el entrenador.
--- cantPokemonDe :: TipoDePokemon -> Entrenador -> Int
--- cantPokemonDe t e = apariciones t (pokemonesDeEntrenador e) -- esto se puede hacer con miMap
+tiposDePokemonesDeEntrenador :: Entrenador -> [TipoDePokemon]
+tiposDePokemonesDeEntrenador e = tiposDePokemones (pokemonesDeEntrenador e)
+
+primerTipoDePokemonDeEntrenador :: Entrenador -> TipoDePokemon
+primerTipoDePokemonDeEntrenador e = head (tiposDePokemonesDeEntrenador e)
+
+entrenadorSinPrimerPokemon :: Entrenador -> Entrenador
+entrenadorSinPrimerPokemon (ConsEntrenador s ps) = ConsEntrenador s (tail ps)
 
 -- Dados dos entrenadores, indica la cantidad de Pokemon de cierto tipo, que le ganarían
 -- a los Pokemon del segundo entrenador.
--- losQueLeGanan :: TipoDePokemon -> Entrenador -> Entrenador -> Int
+losQueLeGanan :: TipoDePokemon -> Entrenador -> Entrenador -> Int
+losQueLeGanan _ (ConsEntrenador _ []) (ConsEntrenador _ _) = 0
+losQueLeGanan t e1 e2 =
+  if esSuperior
+     (primerTipoDePokemonDeEntrenador e1)
+     (primerTipoDePokemonDeEntrenador e2)
+    then 1
+    else 0 + losQueLeGanan t (entrenadorSinPrimerPokemon e1) (entrenadorSinPrimerPokemon e2)
+
+-- hayPokemonEnLista :: TipoDePokemon -> [Pokemon]
 
 -- Dado un entrenador, devuelve True si posee al menos un Pokémon de cada tipo posible.
 -- esMaestroPokemon :: Entrenador -> Bool
