@@ -117,8 +117,8 @@ yTambien _    _ = False
 -----------------
 
 oBien :: Bool -> Bool -> Bool
-oBien True a = True
-oBien _    _ = False
+oBien True _ = True
+oBien _    a = a
 
 -----------------
 
