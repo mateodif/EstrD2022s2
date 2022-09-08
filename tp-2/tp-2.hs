@@ -1,3 +1,19 @@
+-- Funciones del tp 1
+esSuperior :: TipoDePokemon -> TipoDePokemon -> Bool
+esSuperior Agua   Fuego  = True
+esSuperior Fuego  Planta = True
+esSuperior Planta Agua   = True
+esSuperior _      _      = False
+
+esMismoTipoDePokemon :: TipoDePokemon -> TipoDePokemon -> Bool
+esMismoTipoDePokemon Fuego  Fuego  = True
+esMismoTipoDePokemon Agua   Agua   = True
+esMismoTipoDePokemon Planta Planta = True
+esMismoTipoDePokemon _      _      = False
+
+-- Fin funciones del tp 1
+
+
 -- Dada una lista de enteros devuelve la suma de todos sus elementos.
 sumatoria :: [Int] -> Int
 sumatoria []     = 0
