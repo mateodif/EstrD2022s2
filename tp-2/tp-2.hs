@@ -13,6 +13,8 @@ esMismoTipoDePokemon _      _      = False
 
 -- Fin funciones del tp 1
 
+unoSi :: Bool -> Int
+unoSi b = if b then 1 else 0
 
 -- Dada una lista de enteros devuelve la suma de todos sus elementos.
 sumatoria :: [Int] -> Int
@@ -36,34 +38,34 @@ sucesores (x:xs) = (x + 1) : (sucesores xs)
 -- Dada una lista de booleanos devuelve True si todos sus elementos son True.
 -- Precondición: la lista no debe ser vacía
 conjuncion :: [Bool] -> Bool
-conjuncion [] = True
-conjuncion (x : xs) = x && conjuncion xs
+conjuncion []     = True
+conjuncion (x:xs) = x && conjuncion xs
 
 -- Dada una lista de booleanos devuelve True si alguno de sus elementos es True.
 disyuncion :: [Bool] -> Bool
-disyuncion [] = False
-disyuncion (x : xs) = x || disyuncion xs
+disyuncion []     = False
+disyuncion (x:xs) = x || disyuncion xs
 
 -- Dada una lista de listas, devuelve una única lista con todos sus elementos.
 aplanar :: [[a]] -> [a]
-aplanar [] = []
-aplanar (x : xs) = x ++ aplanar xs
+aplanar []     = []
+aplanar (x:xs) = x ++ aplanar xs
 
 -- Dados un elemento e y una lista xs devuelve True si existe un elemento en xs que sea igual
 -- a e.
 pertenece :: Eq a => a -> [a] -> Bool
-pertenece _ [] = False
-pertenece e (x : xs) = e == x || pertenece e xs
+pertenece _ []     = False
+pertenece e (x:xs) = e == x || pertenece e xs
 
 -- Dados un elemento e y una lista xs cuenta la cantidad de apariciones de e en xs.
 apariciones :: Eq a => a -> [a] -> Int
-apariciones _ [] = 0
-apariciones e (x : xs) = if e == x then 1 else 0 + apariciones e xs
+apariciones _ []     = 0
+apariciones e (x:xs) = if e == x then 1 else 0 + apariciones e xs
 
 -- Dados un número n y una lista xs, devuelve todos los elementos de xs que son menores a n.
 losMenoresA :: Int -> [Int] -> [Int]
-losMenoresA _ [] = []
-losMenoresA n (x : xs) =
+losMenoresA _ []     = []
+losMenoresA n (x:xs) =
   if n > x
     then x : losMenoresA n xs
     else losMenoresA n xs
@@ -71,8 +73,8 @@ losMenoresA n (x : xs) =
 -- Dados un número n y una lista de listas, devuelve la lista de aquellas listas que tienen más
 -- de n elementos.
 lasDeLongitudMayorA :: Int -> [[a]] -> [[a]]
-lasDeLongitudMayorA _ [] = []
-lasDeLongitudMayorA n (x : xs) =
+lasDeLongitudMayorA _ []     = []
+lasDeLongitudMayorA n (x:xs) =
   if longitud x > n
     then x : lasDeLongitudMayorA n xs
     else lasDeLongitudMayorA n xs
@@ -80,21 +82,21 @@ lasDeLongitudMayorA n (x : xs) =
 -- Dados una lista y un elemento, devuelve una lista con ese elemento agregado al final de la
 -- lista
 agregarAlFinal :: [a] -> a -> [a]
-agregarAlFinal [] a = [a]
-agregarAlFinal (x : xs) a = x : agregarAlFinal xs a
+agregarAlFinal []     a = [a]
+agregarAlFinal (x:xs) a = x : agregarAlFinal xs a
 
 -- Dadas dos listas devuelve la lista con todos los elementos de la primera lista y todos los
 -- elementos de la segunda a continuación. Definida en Haskell como (++).
 agregar :: [a] -> [a] -> [a]
-agregar [] [] = []
-agregar [] l = l
-agregar (x : xs) l = x : agregar xs l
+agregar []     [] = []
+agregar []     l  = l
+agregar (x:xs) l  = x : agregar xs l
 
 -- Dada una lista devuelve la lista con los mismos elementos de atrás para adelante. Definida
 -- en Haskell como reverse.
 reversa :: [a] -> [a]
-reversa [] = []
-reversa (x : xs) = agregar (reversa xs) [x]
+reversa []     = []
+reversa (x:xs) = agregar (reversa xs) [x]
 
 -- Dadas dos listas de enteros, devuelve una lista donde el elemento en la posición n es el
 -- máximo entre el elemento n de la primera lista y de la segunda lista, teniendo en cuenta que
@@ -133,15 +135,15 @@ repetir n e = if n == 0 then [] else e : repetir (n - 1) e
 -- Dados un número n y una lista xs, devuelve una lista con los n primeros elementos de xs.
 -- Si la lista es vacía, devuelve una lista vacía.
 losPrimeros :: Int -> [a] -> [a]
-losPrimeros _ [] = []
-losPrimeros n (x : xs) = if n == 0 then [] else x : losPrimeros (n - 1) xs
+losPrimeros _ []     = []
+losPrimeros n (x:xs) = if n == 0 then [] else x : losPrimeros (n - 1) xs
 
 -- Dados un número n y una lista xs, devuelve una lista sin los primeros n elementos de lista
 -- recibida. Si n es cero, devuelve la lista completa.
 sinLosPrimeros :: Int -> [a] -> [a]
-sinLosPrimeros _ [] = []
-sinLosPrimeros 0 a = a
-sinLosPrimeros n (x : xs) = if n == 1 then xs else sinLosPrimeros (n - 1) xs
+sinLosPrimeros _ []     = []
+sinLosPrimeros 0 a      = a
+sinLosPrimeros n (x:xs) = if n == 1 then xs else sinLosPrimeros (n - 1) xs
 
 -- Definir el tipo de dato Persona, como un nombre y la edad de la persona.
 data Persona = Persona
@@ -214,17 +216,15 @@ entrenadorSinPrimerPokemon (ConsEntrenador s ps) = ConsEntrenador s (tail ps)
 -- Dados dos entrenadores, indica la cantidad de Pokemon de cierto tipo, que le ganarían
 -- a los Pokemon del segundo entrenador.
 losQueLeGanan :: TipoDePokemon -> Entrenador -> Entrenador -> Int
-losQueLeGanan _ (ConsEntrenador _ []) (ConsEntrenador _ _) = 0
-losQueLeGanan t e1 e2 =
-  if esSuperior
-     (primerTipoDePokemonDeEntrenador e1)
-     (primerTipoDePokemonDeEntrenador e2)
-    then 1
-    else 0 + losQueLeGanan t (entrenadorSinPrimerPokemon e1) (entrenadorSinPrimerPokemon e2)
+losQueLeGanan _ (ConsEntrenador _ []) _  = 0
+losQueLeGanan t e1                    e2 =
+  unoSi (esSuperior
+         (primerTipoDePokemonDeEntrenador e1)
+         (primerTipoDePokemonDeEntrenador e2)) + losQueLeGanan t (entrenadorSinPrimerPokemon e1) (entrenadorSinPrimerPokemon e2)
 
 
 hayTipoDePokemonEnLista :: TipoDePokemon -> [Pokemon] -> Bool
-hayTipoDePokemonEnLista _ [] = False
+hayTipoDePokemonEnLista _ []     = False
 hayTipoDePokemonEnLista t (p:ps) = esMismoTipoDePokemon t (tipoDePokemon p) || hayTipoDePokemonEnLista t ps
 
 -- Dado un entrenador, devuelve True si posee al menos un Pokémon de cada tipo posible.

@@ -32,7 +32,7 @@ nroBolitas co ce = sumatoriaSegunColor co (coloresDeBolitasEnCelda ce)
 
 -- Dado un color y una celda, agrega una bolita de dicho color a la celda.
 poner :: Color -> Celda -> Celda
-poner co ce = Bolita co ce
+poner = Bolita
 
 -- Dado un color y una celda, quita una bolita de dicho color de la celda. Nota: a diferencia de
 -- Gobstones, esta función es total.
@@ -56,9 +56,9 @@ data Camino = Fin | Cofre [Objeto] Camino | Nada Camino
   deriving Show
 
 tesoro0 = Fin
-tesoro1 = Nada (Nada (Fin))
-tesoro2 = Nada (Nada (Nada (Cofre [Cacharro] (Fin))))
-tesoro3 = Nada (Nada (Nada (Cofre [Tesoro] (Nada (Fin)))))
+tesoro1 = Nada (Nada Fin)
+tesoro2 = Nada (Nada (Nada (Cofre [Cacharro] Fin)))
+tesoro3 = Nada (Nada (Nada (Cofre [Tesoro] (Nada Fin))))
 
 esTesoro :: Objeto -> Bool
 esTesoro Tesoro = True
@@ -89,12 +89,6 @@ hayTesoroEn n c = n == pasosHastaTesoro c
 -- Indica si hay al menos “n” tesoros en el camino.
 alMenosNTesoros :: Int -> Camino -> Bool
 alMenosNTesoros n c = pasosHastaTesoro c > n
-
-subCamino :: Int -> Camino -> Camino
-subCamino 0 c           = c
-subCamino n (Nada c)    = subCamino (n - 1) c
-subCamino n (Cofre _ c) = subCamino (n - 1) c
-subCamino n Fin         = subCamino (n - 1) Fin
 
 -- Dado un rango de pasos, indica la cantidad de tesoros que hay en ese rango. Por ejemplo, si
 -- el rango es 3 y 5, indica la cantidad de tesoros que hay entre hacer 3 pasos y hacer 5. Están
