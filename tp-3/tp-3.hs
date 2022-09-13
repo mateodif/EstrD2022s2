@@ -5,8 +5,8 @@ data Celda = Bolita Color Celda | CeldaVacia
   deriving Show
 
 celda0 = CeldaVacia
-celda1 = Bolita Rojo CeldaVacia
-celda2 = Bolita Rojo (Bolita Azul CeldaVacia)
+celde1 = Bolita Rojo CeldaVacia
+celde2 = Bolita Rojo (Bolita Azul CeldaVacia)
 celda3 = Bolita Rojo (Bolita Rojo  CeldaVacia)
 
 coloresDeBolitasEnCelda :: Celda -> [Color]
@@ -94,3 +94,148 @@ alMenosNTesoros n c = pasosHastaTesoro c > n
 -- el rango es 3 y 5, indica la cantidad de tesoros que hay entre hacer 3 pasos y hacer 5. Están
 -- incluidos tanto 3 como 5 en el resultado.
 -- cantTesorosEntre :: Int -> Int -> Camino -> Int
+
+
+-- Dada esta definición para árboles binarios
+data Tree a =
+  EmptyT
+  | NodeT a (Tree a) (Tree a)
+  deriving Show
+
+tree0 :: Tree Int
+tree0 = NodeT 1 (NodeT 2 EmptyT EmptyT) EmptyT
+
+tree1 :: Tree Int
+tree1 = NodeT 1 (NodeT 1 (NodeT 2 EmptyT EmptyT) EmptyT) EmptyT
+
+tree2 :: Tree Int
+tree2 = NodeT 1
+        (NodeT 1 (NodeT 2 EmptyT EmptyT)
+        (NodeT 2 EmptyT EmptyT)) EmptyT
+
+tree3 :: Tree Int
+tree3 = NodeT 10
+        (NodeT 20 (NodeT 40 EmptyT EmptyT) (NodeT 50 EmptyT EmptyT))
+        (NodeT 30 (NodeT 40 EmptyT EmptyT) (NodeT 50 EmptyT EmptyT))
+
+tree4 :: Tree Int
+tree4 = NodeT 1
+          (NodeT 2 (NodeT 4 EmptyT EmptyT) (NodeT 5 EmptyT EmptyT))
+          (NodeT 3 EmptyT EmptyT)
+
+tree5 :: Tree Char
+tree5 = NodeT 'a'
+          (NodeT 'b'
+           (NodeT 'd' EmptyT EmptyT) EmptyT)
+          (NodeT 'c'
+           (NodeT 'e'
+            EmptyT
+            (NodeT 'g' EmptyT EmptyT))
+           (NodeT 'f'
+            (NodeT 'h' EmptyT EmptyT)
+            (NodeT 'i' EmptyT EmptyT)))
+
+tree6 :: Tree Int
+tree6 = NodeT 25
+          (NodeT 15
+            (NodeT 10
+              (NodeT 4 EmptyT EmptyT)
+              (NodeT 12 EmptyT EmptyT))
+            (NodeT 22
+              (NodeT 18 EmptyT EmptyT)
+              (NodeT 24 EmptyT EmptyT)))
+          (NodeT 50
+              (NodeT 35
+                (NodeT 31 EmptyT EmptyT)
+                (NodeT 44 EmptyT EmptyT))
+              (NodeT 70
+                (NodeT 66 EmptyT EmptyT)
+                (NodeT 90 EmptyT EmptyT)))
+
+-- Dado un árbol binario de enteros devuelve la suma entre sus elementos.
+sumarT :: Tree Int -> Int
+sumarT EmptyT          = 0
+sumarT (NodeT n t1 t2) = n + sumarT t1 + sumarT t2
+
+-- Dado un árbol binario devuelve su cantidad de elementos, es decir, el tamaño del árbol (size
+-- en inglés).
+sizeT :: Tree a -> Int
+sizeT EmptyT          = 1
+sizeT (NodeT _ t1 t2) = 1 + sizeT t1 + sizeT t2
+
+-- Dado un árbol de enteros devuelve un árbol con el doble de cada número.
+mapDobleT :: Tree Int -> Tree Int
+mapDobleT (NodeT n t1 t2) = (NodeT (n * 2) (mapDobleT t1) (mapDobleT t2))
+mapDobleT n               = n
+
+-- Dados un elemento y un árbol binario devuelve True si existe un elemento igual a ese en el
+-- árbol.
+perteneceT :: Eq a => a -> Tree a -> Bool
+perteneceT _  EmptyT           = False
+perteneceT e1 (NodeT e2 t1 t2) = e1 == e2 || perteneceT e1 t1 || perteneceT e1 t2
+
+-- Dados un elemento e y un árbol binario devuelve la cantidad de elementos del árbol que son
+-- iguales a e.
+aparicionesT :: Eq a => a -> Tree a -> Int
+aparicionesT _  EmptyT           = 0
+aparicionesT e1 (NodeT e2 t1 t2) = unoSi (e1 == e2) + aparicionesT e1 t1 + aparicionesT e1 t2
+
+-- Dado un árbol devuelve los elementos que se encuentran en sus hojas.
+leaves :: Tree a -> [a]
+leaves EmptyT                  = []
+leaves (NodeT a EmptyT EmptyT) = [a]
+leaves (NodeT _ t1     t2)     = leaves t1 ++ leaves t2
+
+-- Dado un árbol devuelve su altura.
+-- Nota: la altura de un árbol (height en inglés), también llamada profundidad, es la cantidad
+-- de niveles del árbol1. La altura para EmptyT es 0, y para una hoja es 1.
+heightT :: Tree a -> Int
+heightT EmptyT                  = 0
+heightT (NodeT _ EmptyT EmptyT) = 1
+heightT (NodeT _ t1     t2)     = 1 + max (heightT t1) (heightT t2)
+
+-- Dado un árbol devuelve el árbol resultante de intercambiar el hijo izquierdo con el derecho,
+-- en cada nodo del árbol.
+mirrorT :: Tree a -> Tree a
+mirrorT EmptyT          = EmptyT
+mirrorT (NodeT a t1 t2) = NodeT a (mirrorT t2) (mirrorT t1)
+
+-- Dado un árbol devuelve una lista que representa el resultado de recorrerlo en modo in-order.
+-- Nota: En el modo in-order primero se procesan los elementos del hijo izquierdo, luego la raiz
+-- y luego los elementos del hijo derecho.
+toList :: Tree a -> [a]
+toList EmptyT                  = []
+toList (NodeT a EmptyT EmptyT) = [a]
+toList (NodeT a t1     t2)     = toList t1 ++ [a] ++ toList t2
+
+-- Dados un número n y un árbol devuelve una lista con los nodos de nivel n. El nivel de un
+-- nodo es la distancia que hay de la raíz hasta él. La distancia de la raiz a sí misma es 0, y la
+-- distancia de la raiz a uno de sus hijos es 1.
+-- Nota: El primer nivel de un árbol (su raíz) es 0.
+levelN :: Int -> Tree a -> [a]
+levelN _ EmptyT          = []
+levelN 0 (NodeT a _ _)   = [a]
+levelN n (NodeT _ t1 t2) = levelN (n - 1) t1 ++ levelN (n - 1) t2
+
+
+-- Dado un árbol devuelve una lista de listas en la que cada elemento representa un nivel de
+-- dicho árbol.
+listPerLevel :: Tree a -> [[a]]
+listPerLevel EmptyT = []
+listPerLevel (NodeT a EmptyT EmptyT) = [[a]]
+listPerLevel (NodeT a t1 t2) = [a] ++ listPerLevel t1 ++ listPerLevel t2
+
+-- 12. ramaMasLarga :: Tree a -> [a]
+-- Devuelve los elementos de la rama más larga del árbol
+
+-- 13. todosLosCaminos :: Tree a -> [[a]]
+-- Dado un árbol devuelve todos los caminos, es decir, los caminos desde la raiz hasta las hojas.
+
+consAll :: a -> [[a]] -> [[a]]
+consAll x []       = []
+consAll x (xs:xss) = (x:xs) : consAll x xss
+
+todosLosCaminos :: Tree a -> [[a]]
+todosLosCaminos EmptyT                  = []
+todosLosCaminos (NodeT x t1 t2)         = consAll x (todosLosCaminos t1 ++ todosLosCaminos t2)
+todosLosCaminos (NodeT x EmptyT EmptyT) = [[x]]
