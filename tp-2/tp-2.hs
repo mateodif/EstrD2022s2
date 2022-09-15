@@ -229,3 +229,67 @@ hayTipoDePokemonEnLista t (p:ps) = esMismoTipoDePokemon t (tipoDePokemon p) || h
 
 -- Dado un entrenador, devuelve True si posee al menos un Pokémon de cada tipo posible.
 -- esMaestroPokemon :: Entrenador -> Bool
+
+data Seniority = Junior | SemiSenior | Senior
+  deriving Show
+data Proyecto = ConsProyecto String
+  deriving Show
+data Rol = Developer Seniority Proyecto | Management Seniority Proyecto
+  deriving Show
+data Empresa = ConsEmpresa [Rol]
+  deriving Show
+
+senirity0 = Senior
+proyecto0 = ConsProyecto "Biblioteca"
+rol0 = Developer senirity0 proyecto0
+empresa0 = ConsEmpresa [rol0]
+
+-- Definir las siguientes funciones sobre el tipo Empresa:
+
+proyectoDeRol :: Rol -> Proyecto
+proyectoDeRol (Developer _ p) = p
+
+rolesDeEmpresa :: Empresa -> [Rol]
+rolesDeEmpresa (ConsEmpresa roles) = roles
+
+proyectosDeCadaRol :: [Rol] -> [Proyecto]
+proyectosDeCadaRol [] = []
+proyectosDeCadaRol (r:rs) = proyectoDeRol r : proyectosDeCadaRol rs
+
+-- Dada una empresa denota la lista de proyectos en los que trabaja, sin elementos repetidos.
+proyectos :: Empresa -> [Proyecto]
+proyectos e = proyectosDeCadaRol (rolesDeEmpresa e)
+
+nombreDeProyecto Proyecto -> String
+nombreDeProyecto (ConsProyecto s) = s
+
+esMismoProyecto :: Proyecto -> Proyecto -> Bool
+esMismoProyecto p1 p2 = nombreDeProyecto p1 == nombreDeProyecto p2
+
+rolPerteneceAProyecto :: Rol -> [Proyecto] -> Bool
+rolPerteneceAProyecto _ []     = False
+rolPerteneceAProyecto r (p:ps) = esMismoProyecto (proyectoDeRol r) p || rolPerteneceAProyecto r ps
+
+esMismoSeniority :: Rol -> Rol -> Bool
+esMismoSeniority Junior     Junior     = True
+esMismoSeniority SemiSenior SemiSenior = True
+esMismoSeniority Senior     Senior     = True
+esMismoSeniority _          _          = False
+
+esSenior :: Rol -> Bool
+esSenior (Developer s _) = esMismoSeniority s Senior
+
+perteneceAProyectoYEsSenior :: Rol -> Proyecto -> Bool
+perteneceAProyectoYEsSenior r p =
+
+-- Dada una empresa indica la cantidad de desarrolladores senior que posee, que pertecen
+-- además a los proyectos dados por parámetro.
+losDevSenior :: Empresa -> [Proyecto] -> Int
+losDevSenior e = rolesDeEmpresa e
+
+-- Indica la cantidad de empleados que trabajan en alguno de los proyectos dados.
+-- cantQueTrabajanEn :: [Proyecto] -> Empresa -> Int
+
+-- asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
+-- Devuelve una lista de pares que representa a los proyectos (sin repetir) junto con su
+-- cantidad de personas involucradas.
