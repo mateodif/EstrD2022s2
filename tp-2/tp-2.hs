@@ -216,32 +216,51 @@ entrenadorSinPrimerPokemon (ConsEntrenador s ps) = ConsEntrenador s (tail ps)
 -- Dados dos entrenadores, indica la cantidad de Pokemon de cierto tipo, que le ganarían
 -- a los Pokemon del segundo entrenador.
 losQueLeGanan :: TipoDePokemon -> Entrenador -> Entrenador -> Int
-losQueLeGanan _ (ConsEntrenador _ []) _  = 0
-losQueLeGanan t e1                    e2 =
-  unoSi (esSuperior
-         (primerTipoDePokemonDeEntrenador e1)
-         (primerTipoDePokemonDeEntrenador e2)) + losQueLeGanan t (entrenadorSinPrimerPokemon e1) (entrenadorSinPrimerPokemon e2)
-
+losQueLeGanan _ (ConsEntrenador _ []) _ = 0
+losQueLeGanan t e1 e2 =
+  ( if esSuperior
+      (primerTipoDePokemonDeEntrenador e1)
+      (primerTipoDePokemonDeEntrenador e2)
+      then 1
+      else 0
+  )
+    + losQueLeGanan t (entrenadorSinPrimerPokemon e1) (entrenadorSinPrimerPokemon e2)
 
 hayTipoDePokemonEnLista :: TipoDePokemon -> [Pokemon] -> Bool
 hayTipoDePokemonEnLista _ []     = False
 hayTipoDePokemonEnLista t (p:ps) = esMismoTipoDePokemon t (tipoDePokemon p) || hayTipoDePokemonEnLista t ps
 
 -- Dado un entrenador, devuelve True si posee al menos un Pokémon de cada tipo posible.
+
+-- hayCadaTipoPokemon :: [TipoDePokemon] -> Bool
+-- hayCadaTipoPokemon []     = []
+-- hayCadaTipoPokemon (t:ts) = esSuperior t
+
 -- esMaestroPokemon :: Entrenador -> Bool
+-- esMaestroPokemon e =
 
 data Seniority = Junior | SemiSenior | Senior
   deriving Show
+
 data Proyecto = ConsProyecto String
   deriving Show
+
 data Rol = Developer Seniority Proyecto | Management Seniority Proyecto
   deriving Show
+
 data Empresa = ConsEmpresa [Rol]
   deriving Show
 
+senirity0 :: Seniority
 senirity0 = Senior
+
+proyecto0 :: Proyecto
 proyecto0 = ConsProyecto "Biblioteca"
+
+rol0 :: Rol
 rol0 = Developer senirity0 proyecto0
+
+empresa0 :: Empresa
 empresa0 = ConsEmpresa [rol0]
 
 -- Definir las siguientes funciones sobre el tipo Empresa:
@@ -260,17 +279,17 @@ proyectosDeCadaRol (r:rs) = proyectoDeRol r : proyectosDeCadaRol rs
 proyectos :: Empresa -> [Proyecto]
 proyectos e = proyectosDeCadaRol (rolesDeEmpresa e)
 
-nombreDeProyecto Proyecto -> String
+nombreDeProyecto :: Proyecto -> String
 nombreDeProyecto (ConsProyecto s) = s
 
 esMismoProyecto :: Proyecto -> Proyecto -> Bool
 esMismoProyecto p1 p2 = nombreDeProyecto p1 == nombreDeProyecto p2
 
-rolPerteneceAProyecto :: Rol -> [Proyecto] -> Bool
-rolPerteneceAProyecto _ []     = False
-rolPerteneceAProyecto r (p:ps) = esMismoProyecto (proyectoDeRol r) p || rolPerteneceAProyecto r ps
+perteneceAAlgunProyecto :: Rol -> [Proyecto] -> Bool
+perteneceAAlgunProyecto _ []     = False
+perteneceAAlgunProyecto r (p:ps) = esMismoProyecto (proyectoDeRol r) p || perteneceAAlgunProyecto r ps
 
-esMismoSeniority :: Rol -> Rol -> Bool
+esMismoSeniority :: Seniority -> Seniority -> Bool
 esMismoSeniority Junior     Junior     = True
 esMismoSeniority SemiSenior SemiSenior = True
 esMismoSeniority Senior     Senior     = True
@@ -279,17 +298,35 @@ esMismoSeniority _          _          = False
 esSenior :: Rol -> Bool
 esSenior (Developer s _) = esMismoSeniority s Senior
 
-perteneceAProyectoYEsSenior :: Rol -> Proyecto -> Bool
-perteneceAProyectoYEsSenior r p =
+construirEmpresa :: [Rol] -> Empresa
+construirEmpresa rs = ConsEmpresa rs
 
 -- Dada una empresa indica la cantidad de desarrolladores senior que posee, que pertecen
 -- además a los proyectos dados por parámetro.
+rolesSeniorPertenecientesAProyectos :: [Rol] -> [Proyecto] -> Int
+rolesSeniorPertenecientesAProyectos [] _ = 0
+rolesSeniorPertenecientesAProyectos (r:rs) ps =
+  (if esSenior r && perteneceAAlgunProyecto r ps then 1 else 0) + rolesSeniorPertenecientesAProyectos rs ps
+
 losDevSenior :: Empresa -> [Proyecto] -> Int
-losDevSenior e = rolesDeEmpresa e
+losDevSenior (ConsEmpresa rs) ps = rolesSeniorPertenecientesAProyectos rs ps
 
 -- Indica la cantidad de empleados que trabajan en alguno de los proyectos dados.
--- cantQueTrabajanEn :: [Proyecto] -> Empresa -> Int
+rolesPertenecientesAProyectos :: [Rol] -> [Proyecto] -> Int
+rolesPertenecientesAProyectos [] _ = 0
+rolesPertenecientesAProyectos (r:rs) ps =
+  (if perteneceAAlgunProyecto r ps then 1 else 0) + rolesPertenecientesAProyectos rs ps
 
--- asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
+
+cantQueTrabajanEn :: [Proyecto] -> Empresa -> Int
+cantQueTrabajanEn [] _                = 0
+cantQueTrabajanEn ps (ConsEmpresa rs) = rolesPertenecientesAProyectos rs ps
+
 -- Devuelve una lista de pares que representa a los proyectos (sin repetir) junto con su
 -- cantidad de personas involucradas.
+asignadosSegunRoles :: [Proyecto] -> [Rol] -> [(Proyecto, Int)]
+asignadosSegunRoles []     _ = []
+asignadosSegunRoles (p:ps) rs = (p, rolesPertenecientesAProyectos rs [p]) : asignadosSegunRoles ps rs
+
+asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
+asignadosPorProyecto (ConsEmpresa rs) = asignadosSegunRoles (proyectosDeCadaRol rs) rs
