@@ -60,7 +60,7 @@ pertenece e (x:xs) = e == x || pertenece e xs
 -- Dados un elemento e y una lista xs cuenta la cantidad de apariciones de e en xs.
 apariciones :: Eq a => a -> [a] -> Int
 apariciones _ []     = 0
-apariciones e (x:xs) = if e == x then 1 else 0 + apariciones e xs
+apariciones e (x:xs) = (if e == x then 1 else 0) + apariciones e xs
 
 -- Dados un número n y una lista xs, devuelve todos los elementos de xs que son menores a n.
 losMenoresA :: Int -> [Int] -> [Int]
@@ -88,7 +88,6 @@ agregarAlFinal (x:xs) a = x : agregarAlFinal xs a
 -- Dadas dos listas devuelve la lista con todos los elementos de la primera lista y todos los
 -- elementos de la segunda a continuación. Definida en Haskell como (++).
 agregar :: [a] -> [a] -> [a]
-agregar []     [] = []
 agregar []     l  = l
 agregar (x:xs) l  = x : agregar xs l
 
@@ -106,8 +105,8 @@ maximoEntreDos a b = if a > b then a else b
 
 zipMaximos :: [Int] -> [Int] -> [Int]
 zipMaximos []       []     = []
-zipMaximos []       _      = []
-zipMaximos _        []     = []
+zipMaximos []       a      = a
+zipMaximos a        []     = a
 zipMaximos (x:xs)   (y:ys) = agregar [maximoEntreDos x y] (zipMaximos xs ys)
 
 -- Dada una lista devuelve el mínimo
@@ -182,8 +181,12 @@ obtenerPersonaSegunEdad :: Int -> [Persona] -> Persona
 obtenerPersonaSegunEdad _ [] = error "No existe una persona con la edad dada"
 obtenerPersonaSegunEdad n (x:xs) = if edadDePersona x == n then x else obtenerPersonaSegunEdad n xs
 
+elMasViejoEntreDos :: Persona -> Persona -> Persona
+elMasViejoEntreDos p1 p2 = if edadDePersona p1 > edadDePersona p2 then p1 else p2
+
 elMasViejo :: [Persona] -> Persona
-elMasViejo l = obtenerPersonaSegunEdad (elMaximo (edadesDePersonas l)) l
+elMasViejo [p]    = p
+elMasViejo (p:ps) = elMasViejoEntreDos p (elMasViejo ps)
 
 -------------------------
 
@@ -194,9 +197,10 @@ data Pokemon = ConsPokemon TipoDePokemon Int
 data Entrenador = ConsEntrenador String [Pokemon]
 
 -- Devuelve la cantidad de Pokémon que posee el entrenador.
-pokemonesDeEntrenador :: Entrenador -> [Pokemon]
-pokemonesDeEntrenador (ConsEntrenador _ ps) = ps
+cantPokemon :: Entrenador -> Int
+cantPokemon (ConsEntrenador _ ps) = longitud ps
 
+-- Devuelve la cantidad de Pokémon de determinado tipo que posee el entrenador.
 tipoDePokemon :: Pokemon -> TipoDePokemon
 tipoDePokemon (ConsPokemon t _) = t
 
@@ -204,40 +208,48 @@ tiposDePokemones :: [Pokemon] -> [TipoDePokemon]
 tiposDePokemones []     = []
 tiposDePokemones (p:ps) = tipoDePokemon p : (tiposDePokemones ps)
 
-tiposDePokemonesDeEntrenador :: Entrenador -> [TipoDePokemon]
-tiposDePokemonesDeEntrenador e = tiposDePokemones (pokemonesDeEntrenador e)
+contarPokemonesDeTipo :: TipoDePokemon -> [Pokemon] -> Int
+contarPokemonesDeTipo t []     = 0
+contarPokemonesDeTipo t (p:ps) =
+  (if esMismoTipoDePokemon t (tipoDePokemon p) then 1 else 0) + contarPokemonesDeTipo t ps
 
-primerTipoDePokemonDeEntrenador :: Entrenador -> TipoDePokemon
-primerTipoDePokemonDeEntrenador e = head (tiposDePokemonesDeEntrenador e)
-
-entrenadorSinPrimerPokemon :: Entrenador -> Entrenador
-entrenadorSinPrimerPokemon (ConsEntrenador s ps) = ConsEntrenador s (tail ps)
+cantPokemonDe :: TipoDePokemon -> Entrenador -> Int
+cantPokemonDe t (ConsEntrenador _ ps) = contarPokemonesDeTipo t ps
 
 -- Dados dos entrenadores, indica la cantidad de Pokemon de cierto tipo, que le ganarían
 -- a los Pokemon del segundo entrenador.
-losQueLeGanan :: TipoDePokemon -> Entrenador -> Entrenador -> Int
-losQueLeGanan _ (ConsEntrenador _ []) _ = 0
-losQueLeGanan t e1 e2 =
-  ( if esSuperior
-      (primerTipoDePokemonDeEntrenador e1)
-      (primerTipoDePokemonDeEntrenador e2)
-      then 1
-      else 0
-  )
-    + losQueLeGanan t (entrenadorSinPrimerPokemon e1) (entrenadorSinPrimerPokemon e2)
+esSuperiorAAlgunPokemon :: Pokemon -> [Pokemon] -> Bool
+esSuperiorAAlgunPokemon p [] = False
+esSuperiorAAlgunPokemon p (pp:pps) =
+  esSuperior (tipoDePokemon p) (tipoDePokemon pp) || esSuperiorAAlgunPokemon p pps
+
+contarPokemonesQueGanan :: TipoDePokemon -> [Pokemon] -> [Pokemon] -> Int
+contarPokemonesQueGanan _ []     _   = 0
+contarPokemonesQueGanan t (p:ps) pps =
+  (if esMismoTipoDePokemon t (tipoDePokemon p) && esSuperiorAAlgunPokemon p pps
+   then 1
+   else 0) + contarPokemonesQueGanan t ps pps
+
+cuantosDeTipo_De_LeGananATodosLosDe_ :: TipoDePokemon -> Entrenador -> Entrenador -> Int
+cuantosDeTipo_De_LeGananATodosLosDe_ t (ConsEntrenador _ ps1) (ConsEntrenador _ ps2) =
+  contarPokemonesQueGanan t ps1 ps2
+
+-- Dado un entrenador, devuelve True si posee al menos un Pokémon de cada tipo posible.
 
 hayTipoDePokemonEnLista :: TipoDePokemon -> [Pokemon] -> Bool
 hayTipoDePokemonEnLista _ []     = False
 hayTipoDePokemonEnLista t (p:ps) = esMismoTipoDePokemon t (tipoDePokemon p) || hayTipoDePokemonEnLista t ps
 
--- Dado un entrenador, devuelve True si posee al menos un Pokémon de cada tipo posible.
+hayCadaTipoPokemon :: [Pokemon] -> Bool
+hayCadaTipoPokemon ps =
+  hayTipoDePokemonEnLista Agua ps &&
+  hayTipoDePokemonEnLista Planta ps &&
+  hayTipoDePokemonEnLista Fuego ps
 
--- hayCadaTipoPokemon :: [TipoDePokemon] -> Bool
--- hayCadaTipoPokemon []     = []
--- hayCadaTipoPokemon (t:ts) = esSuperior t
+esMaestroPokemon :: Entrenador -> Bool
+esMaestroPokemon (ConsEntrenador _ ps) = hayCadaTipoPokemon ps
 
--- esMaestroPokemon :: Entrenador -> Bool
--- esMaestroPokemon e =
+--------------------------------------------------------
 
 data Seniority = Junior | SemiSenior | Senior
   deriving Show
