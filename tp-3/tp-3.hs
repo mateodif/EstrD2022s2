@@ -23,7 +23,7 @@ esMismoColor _    _    = False
 
 sumatoriaSegunColor :: Color -> [Color] -> Int
 sumatoriaSegunColor _ []     = 0
-sumatoriaSegunColor c (x:xs) = unoSi (esMismoColor c x) + sumatoriaSegunColor c xs
+sumatoriaSegunColor c (x:xs) = (if esMismoColor c x then 1 else 0) + sumatoriaSegunColor c xs
 
 -- Dados un color y una celda, indica la cantidad de bolitas de ese color. Nota: pensar si ya
 -- existe una operación sobre listas que ayude a resolver el problema.
@@ -40,12 +40,12 @@ sacar :: Color -> Celda -> Celda
 sacar _ CeldaVacia = CeldaVacia
 sacar co1 (Bolita co2 ce) =
   if esMismoColor co1 co2
-  then ce
-  else Bolita co2 (sacar co1 ce)
+    then ce
+    else Bolita co2 (sacar co1 ce)
 
 -- Dado un número n, un color c, y una celda, agrega n bolitas de color c a la celda.
 ponerN :: Int -> Color -> Celda -> Celda
-ponerN 0 _ ce = ce
+ponerN 0 _  ce = ce
 ponerN n co ce = ponerN (n - 1) co (poner co ce)
 
 ------------------------------------------------------
@@ -165,7 +165,7 @@ sizeT (NodeT _ t1 t2) = 1 + sizeT t1 + sizeT t2
 
 -- Dado un árbol de enteros devuelve un árbol con el doble de cada número.
 mapDobleT :: Tree Int -> Tree Int
-mapDobleT (NodeT n t1 t2) = (NodeT (n * 2) (mapDobleT t1) (mapDobleT t2))
+mapDobleT (NodeT n t1 t2) = NodeT (n * 2) (mapDobleT t1) (mapDobleT t2)
 mapDobleT n               = n
 
 -- Dados un elemento y un árbol binario devuelve True si existe un elemento igual a ese en el
@@ -220,15 +220,19 @@ levelN n (NodeT _ t1 t2) = levelN (n - 1) t1 ++ levelN (n - 1) t2
 
 -- Dado un árbol devuelve una lista de listas en la que cada elemento representa un nivel de
 -- dicho árbol.
+hastaNivel :: Int -> Tree a -> [[a]]
+hastaNivel 0 t = [levelN 0 t]
+hastaNivel n t = levelN n t : hastaNivel (n - 1) t
+
 listPerLevel :: Tree a -> [[a]]
-listPerLevel EmptyT = []
-listPerLevel (NodeT a EmptyT EmptyT) = [[a]]
-listPerLevel (NodeT a t1 t2) = [a] ++ listPerLevel t1 ++ listPerLevel t2
+listPerLevel t = hastaNivel (heightT t) t
 
--- 12. ramaMasLarga :: Tree a -> [a]
 -- Devuelve los elementos de la rama más larga del árbol
+ramaMasLarga :: Tree a -> [a]
+ramaMasLarga EmptyT                  = []
+ramaMasLarga (NodeT a EmptyT EmptyT) = [a]
+ramaMasLarga (NodeT a t1 t2)         = a : ramaMasLarga (if heightT t1 > heightT t2 then t1 else t2)
 
--- 13. todosLosCaminos :: Tree a -> [[a]]
 -- Dado un árbol devuelve todos los caminos, es decir, los caminos desde la raiz hasta las hojas.
 
 consAll :: a -> [[a]] -> [[a]]
@@ -237,5 +241,69 @@ consAll x (xs:xss) = (x:xs) : consAll x xss
 
 todosLosCaminos :: Tree a -> [[a]]
 todosLosCaminos EmptyT                  = []
-todosLosCaminos (NodeT x t1 t2)         = consAll x (todosLosCaminos t1 ++ todosLosCaminos t2)
 todosLosCaminos (NodeT x EmptyT EmptyT) = [[x]]
+todosLosCaminos (NodeT x t1 t2)         = consAll x (todosLosCaminos t1 ++ todosLosCaminos t2)
+
+-----------------------------
+
+data ExpA = Valor Int
+          | Sum ExpA ExpA
+          | Prod ExpA ExpA
+          | Neg ExpA
+          deriving Show
+
+exp0 :: ExpA
+exp0 = Sum (Valor 1) (Valor 2)
+
+exp1 = Prod exp0 (Valor 3)
+exp2 = Neg exp1
+exp3 = Sum (Valor 0) (Valor 3)
+
+-- Dada una expresión aritmética devuelve el resultado evaluarla.
+eval :: ExpA -> Int
+eval (Valor a)         = a
+eval (Sum   exp1 exp2) = eval exp1 + eval exp2
+eval (Prod  exp1 exp2) = eval exp1 * eval exp2
+eval (Neg   exp)       = negate (eval exp)
+
+-- Dada una expresión aritmética, la simplifica según los siguientes criterios (descritos utilizando
+-- notación matemática convencional):
+-- a) 0 + x = x + 0 = x
+-- b) 0 * x = x * 0 = 0
+-- c) 1 * x = x * 1 = x
+-- d ) - (- x) = x
+
+-- x = 4
+a = Sum (Valor 0) (Valor 4)
+a' = Sum (Valor 4) (Valor 0)
+b = Prod (Valor 0) (Valor 4)
+b' = Prod (Valor 4) (Valor 0)
+c = Prod (Valor 1) (Valor 4)
+c' = Prod (Valor 4) (Valor 1)
+d = Neg (Neg (Valor 4))
+
+esCero :: ExpA -> Bool
+esCero (Valor 0) = True
+esCero _         = False
+
+simplificarSum :: ExpA -> ExpA -> ExpA
+simplificarSum (Valor 0) exp2      = exp2
+simplificarSum exp1      (Valor 0) = exp1
+simplificarSum exp1      exp2      = Sum exp1 exp2
+
+simplificarProd :: ExpA -> ExpA -> ExpA
+simplificarProd (Valor 0) _ = Valor 0
+simplificarProd _         (Valor 0) = Valor 0
+simplificarProd (Valor 1) a = a
+simplificarProd a         (Valor 1) = a
+simplificarProd exp1 exp2 = Prod exp1 exp2
+
+simplificarNeg :: ExpA -> ExpA
+simplificarNeg (Neg exp) = exp
+simplificarNeg exp = Neg exp
+
+simplificar :: ExpA -> ExpA
+simplificar (Sum exp1 exp2) = simplificarSum exp1 exp2
+simplificar (Prod exp1 exp2) = simplificarProd exp1 exp2
+simplificar (Neg exp) = simplificarNeg exp
+simplificar exp = exp
