@@ -181,12 +181,13 @@ obtenerPersonaSegunEdad :: Int -> [Persona] -> Persona
 obtenerPersonaSegunEdad _ [] = error "No existe una persona con la edad dada"
 obtenerPersonaSegunEdad n (x:xs) = if edadDePersona x == n then x else obtenerPersonaSegunEdad n xs
 
-elMasViejoEntreDos :: Persona -> Persona -> Persona
-elMasViejoEntreDos p1 p2 = if edadDePersona p1 > edadDePersona p2 then p1 else p2
-
 elMasViejo :: [Persona] -> Persona
+elMasViejo [] = error "Se necesita al menos una Persona"
 elMasViejo [p]    = p
-elMasViejo (p:ps) = elMasViejoEntreDos p (elMasViejo ps)
+elMasViejo (p:ps) =
+  if edadDePersona p > edadDePersona (elMasViejo ps)
+     then p
+     else elMasViejo ps
 
 -------------------------
 
