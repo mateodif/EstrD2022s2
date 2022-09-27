@@ -28,7 +28,8 @@ sumatoriaSegunColor c (x:xs) = (if esMismoColor c x then 1 else 0) + sumatoriaSe
 -- Dados un color y una celda, indica la cantidad de bolitas de ese color. Nota: pensar si ya
 -- existe una operación sobre listas que ayude a resolver el problema.
 nroBolitas :: Color -> Celda -> Int
-nroBolitas co ce = sumatoriaSegunColor co (coloresDeBolitasEnCelda ce)
+nroBolitas _  CeldaVacia = 0
+nroBolitas co (Bolita co2 ce) = (if esMismoColor co co2 then 1 else 0) + nroBolitas co ce
 
 -- Dado un color y una celda, agrega una bolita de dicho color a la celda.
 poner :: Color -> Celda -> Celda
