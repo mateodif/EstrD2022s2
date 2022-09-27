@@ -80,7 +80,7 @@ hayTesoro (Cofre objs c) = hayTesoroEnCofre objs || hayTesoro c
 -- Precondición: tiene que haber al menos un tesoro.
 camino0 = Cofre [Tesoro] (Nada Fin)
 camino1 = Nada (Nada (Nada (Cofre [Tesoro] (Nada Fin))))
-camino2 = Nada (Cofre [Cacharro] (Nada (Cofre [Cacharro] (Cofre [Tesoro] Fin))))
+camino2 = Nada (Cofre [Cacharro] (Nada (Cofre [Tesoro] (Cofre [Tesoro] Fin))))
 
 pasosHastaTesoro :: Camino -> Int
 pasosHastaTesoro Fin            = 0
@@ -93,8 +93,13 @@ hayTesoroEn :: Int -> Camino -> Bool
 hayTesoroEn n c = n == pasosHastaTesoro c
 
 -- Indica si hay al menos “n” tesoros en el camino.
+cantidadDeTesoros :: Camino -> Int
+cantidadDeTesoros Fin = 0
+cantidadDeTesoros (Cofre objs c) = (if hayTesoroEnCofre objs then 1 else 0) + cantidadDeTesoros c
+cantidadDeTesoros (Nada c) = cantidadDeTesoros c
+
 alMenosNTesoros :: Int -> Camino -> Bool
-alMenosNTesoros n c = pasosHastaTesoro c > n
+alMenosNTesoros n c = cantidadDeTesoros c > n
 
 -- Dado un rango de pasos, indica la cantidad de tesoros que hay en ese rango. Por ejemplo, si
 -- el rango es 3 y 5, indica la cantidad de tesoros que hay entre hacer 3 pasos y hacer 5. Están
