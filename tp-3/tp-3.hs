@@ -78,8 +78,13 @@ hayTesoro (Cofre objs c) = hayTesoroEnCofre objs || hayTesoro c
 -- Indica la cantidad de pasos que hay que recorrer hasta llegar al primer cofre con un tesoro.
 -- Si un cofre con un tesoro está al principio del camino, la cantidad de pasos a recorrer es 0.
 -- Precondición: tiene que haber al menos un tesoro.
+camino0 = Cofre [Tesoro] (Nada Fin)
+camino1 = Nada (Nada (Nada (Cofre [Tesoro] (Nada Fin))))
+camino2 = Nada (Cofre [Cacharro] (Nada (Cofre [Cacharro] (Cofre [Tesoro] Fin))))
+
 pasosHastaTesoro :: Camino -> Int
-pasosHastaTesoro (Cofre objs c) = if hayTesoroEnCofre objs then 0 else 1
+pasosHastaTesoro Fin            = 0
+pasosHastaTesoro (Cofre objs c) = if hayTesoroEnCofre objs then 0 else 1 + pasosHastaTesoro c
 pasosHastaTesoro (Nada c)       = 1 + pasosHastaTesoro c
 
 -- Indica si hay un tesoro en una cierta cantidad exacta de pasos. Por ejemplo, si el número de
