@@ -171,7 +171,7 @@ sumarT (NodeT n t1 t2) = n + sumarT t1 + sumarT t2
 -- Dado un árbol binario devuelve su cantidad de elementos, es decir, el tamaño del árbol (size
 -- en inglés).
 sizeT :: Tree a -> Int
-sizeT EmptyT          = 1
+sizeT EmptyT          = 0
 sizeT (NodeT _ t1 t2) = 1 + sizeT t1 + sizeT t2
 
 -- Dado un árbol de enteros devuelve un árbol con el doble de cada número.
