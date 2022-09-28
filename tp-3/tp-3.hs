@@ -286,7 +286,7 @@ eval (Neg   exp)       = negate (eval exp)
 -- d ) - (- x) = x
 
 -- x = 4
-a = Sum (Valor 0) (Valor 4)
+a = Sum (Valor 0) (Neg (Neg (Valor 4)))
 a' = Sum (Valor 4) (Valor 0)
 b = Prod (Valor 0) (Valor 4)
 b' = Prod (Valor 4) (Valor 0)
@@ -315,7 +315,7 @@ simplificarNeg (Neg exp) = exp
 simplificarNeg exp = Neg exp
 
 simplificar :: ExpA -> ExpA
-simplificar (Sum exp1 exp2) = simplificarSum exp1 exp2
-simplificar (Prod exp1 exp2) = simplificarProd exp1 exp2
-simplificar (Neg exp) = simplificarNeg exp
+simplificar (Sum exp1 exp2) = simplificarSum (simplificar exp1) (simplificar exp2)
+simplificar (Prod exp1 exp2) = simplificarProd (simplificar exp1) (simplificar exp2)
+simplificar (Neg exp) = simplificarNeg (simplificar exp)
 simplificar exp = exp
