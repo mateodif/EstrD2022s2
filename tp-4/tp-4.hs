@@ -61,29 +61,92 @@ cantCapasPorPizza :: [Pizza] -> [(Int, Pizza)]
 cantCapasPorPizza []     = []
 cantCapasPorPizza (p:ps) = cantCapasYPizza p : cantCapasPorPizza ps
 
+--------------------------------------------------------------------
+
+data Dir = Izq | Der
+data Objeto = Tesoro | Chatarra
+data Cofre = Cofre [Objeto]
+data Mapa = Fin Cofre
+          | Bifurcacion Cofre Mapa Mapa
+          
+-- Indica si hay un tesoro en alguna parte del mapa.
+-- esTesoro :: Cofre -> Bool
+-- esTesoro (Cofre objs) =
+
+-- hayTesoro :: Mapa -> Bool
+-- hayTesoro (Fin c) = esTesoro c
+
+-- Indica si al final del camino hay un tesoro. Nota: el final de un camino se representa con una
+-- lista vacía de direcciones.
+-- hayTesoroEn :: [Dir] -> Mapa -> Bool
+
+-- Indica el camino al tesoro. Precondición: existe un tesoro y es único.
+-- caminoAlTesoro :: Mapa -> [Dir]
+
+-- Indica el camino de la rama más larga.
+-- caminoDeLaRamaMasLarga :: Mapa -> [Dir]
+
+-- Devuelve los tesoros separados por nivel en el árbol.
+-- tesorosPorNivel :: Mapa -> [[Objeto]]
+
+-- Devuelve todos lo caminos en el mapa.
+-- todosLosCaminos :: Mapa -> [[Dir]]
 
 
+type Presa = String -- nombre de presa
+type Territorio = String -- nombre de territorio
+type Nombre = String -- nombre de lobo
+data Lobo = Cazador Nombre [Presa] Lobo Lobo Lobo
+          | Explorador Nombre [Territorio] Lobo Lobo
+          | Cria Nombre
+data Manada = M Lobo
 
+p :: Presa
+p = "rata"
 
--- data Lobo = Cr Nombre
---           | Ex Nombre [Territorio] Lobo Lobo
---           | Ca Nombre [Presa] Lobo Lobo Lobo
+t :: Territorio
+t = "Asia"
 
--- ept :: Manada -> [(Territorio, [Nombre])]
+c1, c2, c3 :: Lobo
+c1 = Cria "a"
+c2 = Cria "b"
+c3 = Cria "c"
 
--- eptL :: Lobo -> [(Territorio, [Nombre])]
--- eptL (Cr n) = []
--- eptL (Ex n ts l1 l2) = combinarEpt (mkListaDePares ts [n]) (combinarEpt (eptL l1) (eptL l2))
--- eptL (Ca n ps l1 l2 l3) = combinarEpt (eptL l1) (combinarEpt (eptL l2) (eptL l3))
+cc1, cc2 :: Lobo
+cc1 = Cazador "Feo" [p] c1 c2 c3
+cc2 = Explorador "Fea" [t] c1 c2
 
--- combinarEpt :: [(Territorio, [Nombre])] -> [(Territorio, [Nombre])] -> [(Territorio, [Nombre])]
--- combinarEpt []     ys = ys
--- combinarEpt (x:xs) ys = agregarNs x (combinarEpt ys)
+e1 :: Lobo
+e1 = Explorador "Mijo" [t] cc1 cc2
 
--- agregarNs :: (Territorio, [Nombre]) -> [(Territorio, [Nombre])] -> [(Territorio, [Nombre])]
--- agregarNs (t,ns) [] = [(t,ns)]
--- agregarNs (t,ns) ((t',ns'):xs) = if t == t'
---                                     then (t, ns ++ ns') : xs
---                                     else (t',ns') : agregarNs (t,ns) xs
+m :: Manada
+m = M e1
 
--- mkListaDePares :: [a] -> b -> [(a,b)]
+exploradoresPorTerritorio :: Manada -> [(Territorio, [Nombre])]
+exploradoresPorTerritorio (M l) = exploradoresPorTerritorioLobo l
+
+exploradoresPorTerritorioLobo :: Lobo -> [(Territorio, [Nombre])]
+exploradoresPorTerritorioLobo (Cria n) = []
+exploradoresPorTerritorioLobo (Explorador n ts l1 l2) =
+  combinarEpt (crearListaDePares ts [n])
+              (combinarEpt (exploradoresPorTerritorioLobo l1)
+                           (exploradoresPorTerritorioLobo l2))
+exploradoresPorTerritorioLobo (Cazador n ps l1 l2 l3) =
+  combinarEpt (exploradoresPorTerritorioLobo l1)
+              (combinarEpt (exploradoresPorTerritorioLobo l2)
+                           (exploradoresPorTerritorioLobo l3))
+
+combinarEpt :: [(Territorio, [Nombre])] -> [(Territorio, [Nombre])] -> [(Territorio, [Nombre])]
+combinarEpt []     ys = ys
+combinarEpt (x:xs) ys = actualizarTerritoriosConNombres x (combinarEpt xs ys)
+
+actualizarTerritoriosConNombres :: (Territorio, [Nombre]) -> [(Territorio, [Nombre])] -> [(Territorio, [Nombre])]
+actualizarTerritoriosConNombres (t,ns) []            = [(t,ns)]
+actualizarTerritoriosConNombres (t,ns) ((t',ns'):xs) =
+  if t == t'
+    then (t,ns ++ ns') : xs
+    else (t',ns') : actualizarTerritoriosConNombres (t,ns) xs
+
+crearListaDePares :: [a] -> b -> [(a,b)]
+crearListaDePares []     _ = []
+crearListaDePares (x:xs) y = (x,y) : crearListaDePares xs y
