@@ -228,15 +228,16 @@ levelN _ EmptyT          = []
 levelN 0 (NodeT a _ _)   = [a]
 levelN n (NodeT _ t1 t2) = levelN (n - 1) t1 ++ levelN (n - 1) t2
 
-
 -- Dado un árbol devuelve una lista de listas en la que cada elemento representa un nivel de
 -- dicho árbol.
-hastaNivel :: Int -> Tree a -> [[a]]
-hastaNivel 0 t = [levelN 0 t]
-hastaNivel n t = levelN n t : hastaNivel (n - 1) t
+agruparPorNivel :: [[a]] -> [[a]] -> [[a]]
+agruparPorNivel xs     []     = xs
+agruparPorNivel []     ys     = ys
+agruparPorNivel (x:xs) (y:ys) = (x ++ y) : agruparPorNivel xs ys
 
 listPerLevel :: Tree a -> [[a]]
-listPerLevel t = hastaNivel (heightT t) t
+listPerLevel EmptyT = []
+listPerLevel (NodeT a t1 t2) = [a] : agruparPorNivel (listPerLevel t1) (listPerLevel t2)
 
 -- Devuelve los elementos de la rama más larga del árbol
 ramaMasLarga :: Tree a -> [a]
