@@ -1,6 +1,7 @@
 module Set where
 
 data Set a = S [a] Int
+  deriving Show
 
 -- Crea un conjunto vacío.
 emptyS :: Set a
