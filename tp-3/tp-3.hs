@@ -33,7 +33,7 @@ nroBolitas co (Bolita co2 ce) = (if esMismoColor co co2 then 1 else 0) + nroBoli
 
 -- Dado un color y una celda, agrega una bolita de dicho color a la celda.
 poner :: Color -> Celda -> Celda
-poner = Bolita
+poner co ce = Bolita co ce
 
 -- Dado un color y una celda, quita una bolita de dicho color de la celda. Nota: a diferencia de
 -- Gobstones, esta función es total.
