@@ -1,11 +1,11 @@
-module Queue where
+module QueueReverse where
 
 data Queue a = Q [a]
   deriving Show
 
--- Una Queue es un tipo abstracto de datos de naturaleza FIFO (first in, first out). Esto significa
--- que los elementos salen en el orden con el que entraron, es decir, el que se agrega primero es el
--- primero en salir (como la cola de un banco).
+-- Implemente ahora la versión que agrega por delante y quita por el final de la lista. Compare
+-- la eficiencia entre ambas implementaciones.
+
 
 -- Crea una cola vacía.
 -- n(1)
@@ -19,16 +19,16 @@ isEmptyQ (Q []) = True
 isEmptyQ _      = False
 
 -- Dados un elemento y una cola, agrega ese elemento a la cola.
--- O(n)
+-- O(1)
 enqueue :: a -> Queue a -> Queue a
-enqueue a (Q l) = Q (l ++ [a])
+enqueue a (Q l) = Q (a:l)
 
 -- Dada una cola devuelve el primer elemento de la cola.
--- O(1)
+-- O(n)
 firstQ :: Queue a -> a
-firstQ (Q l) = head l
+firstQ (Q l) = last l
 
 -- Dada una cola la devuelve sin su primer elemento.
--- O(1)
+-- O(n)
 dequeue :: Queue a -> Queue a
-dequeue (Q l) = Q (tail l)
+dequeue (Q l) = Q (init l)

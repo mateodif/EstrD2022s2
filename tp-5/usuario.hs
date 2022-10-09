@@ -1,3 +1,5 @@
+import Queue (Queue, dequeue, emptyQ, enqueue, firstQ, isEmptyQ)
+import Stack (Stack, emptyS, isEmptyS, push, top, pop, lenS)
 import Set
   ( Set,
     addS,
@@ -17,8 +19,8 @@ data Tree a
 -- Dados una lista y un conjunto, devuelve una lista con todos los elementos que pertenecen
 -- al conjunto.
 losQuePertenecen :: Eq a => [a] -> Set a -> [a]
-losQuePertenecen []     _ = []
-losQuePertenecen (x:xs) s =
+losQuePertenecen [] _ = []
+losQuePertenecen (x : xs) s =
   if belongs x s
     then x : losQuePertenecen xs s
     else losQuePertenecen xs s
@@ -26,7 +28,7 @@ losQuePertenecen (x:xs) s =
 -- Quita todos los elementos repetidos de la lista dada utilizando un conjunto como estructura auxiliar.
 sinRepetidosSet :: Eq a => [a] -> Set a
 sinRepetidosSet [] = emptyS
-sinRepetidosSet (x:xs) = addS x (sinRepetidosSet xs)
+sinRepetidosSet (x : xs) = addS x (sinRepetidosSet xs)
 
 sinRepetidos :: Eq a => [a] -> [a]
 sinRepetidos l = setToList (sinRepetidosSet l)
@@ -34,10 +36,30 @@ sinRepetidos l = setToList (sinRepetidosSet l)
 -- Dado un arbol de conjuntos devuelve un conjunto con la union de todos los conjuntos
 -- del arbol.
 arbolConSets :: Tree (Set String)
-arbolConSets = NodeT (addS "a" emptyS)
-                (NodeT (addS "b" emptyS) EmptyT EmptyT)
-                EmptyT
+arbolConSets =
+  NodeT
+    (addS "a" emptyS)
+    (NodeT (addS "b" emptyS) EmptyT EmptyT)
+    EmptyT
 
 unirTodos :: Eq a => Tree (Set a) -> Set a
-unirTodos EmptyT          = emptyS
+unirTodos EmptyT = emptyS
 unirTodos (NodeT s t1 t2) = unionS s (unionS (unirTodos t1) (unirTodos t2))
+
+-----------------------------------------
+
+lengthQ :: Queue a -> Int
+lengthQ q = if isEmptyQ q then 0 else 1 + lengthQ (dequeue q)
+
+queueToList :: Queue a -> [a]
+queueToList q =
+  if isEmptyQ q then [] else firstQ q : queueToList (dequeue q)
+
+unionQ :: Queue a -> Queue a -> Queue a
+unionQ q1 q2 =
+  if isEmptyQ q2 then q1 else enqueue (firstQ q2) (unionQ q1 (dequeue q2))
+
+-------------------------------------------
+
+apilar :: [a] -> Stack a
+apilar = undefined
