@@ -1,6 +1,7 @@
 module Stack where
 
 data Stack a = S [a]
+  deriving Show
 
 emptyS :: Stack a
 emptyS = S []
@@ -10,7 +11,7 @@ isEmptyS (S []) = True
 isEmptyS _      = False
 
 push :: a -> Stack a -> Stack a
-push a (S l) = S (l ++ [a])
+push a (S l) = S (a:l)
 
 top :: Stack a -> a
 top (S l) = head l
