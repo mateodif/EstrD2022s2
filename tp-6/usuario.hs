@@ -26,6 +26,31 @@ heapSort l = pqToList (listToPQ l)
 ------------------------------------------------
 
 -- Proposito: obtiene los valores asociados a cada clave del map.
+-- O(n^2) donde n es la cantidad de keys del map
+-- el costo de lookupM es lineal y se hace en cada llamado recursivo
+getFromKeys :: Eq k => [k] -> Map k v -> [Maybe v]
+getFromKeys []     m = []
+getFromKeys (k:ks) m = lookupM k m : getFromKeys ks m
+
+-- O(n^2) donde n es la cantidad de keys del map
+-- se esta llamando a la funcion getFromKeys que es O(n^2) y ademas
+-- se llama a keys que es O(n), pero al realizarse "al mismo tiempo"
+-- seria O(n^2 + n) => O(n^2)
 valuesM :: Eq k => Map k v -> [Maybe v]
-valuesM m =
-  let ks = keys m in
+valuesM m = getFromKeys (keys m) m
+
+-- Propósito: indica si en el map se encuentran todas las claves dadas.
+todasAsociadas :: Eq k => [k] -> Map k v -> Bool
+todasAsociadas [] m = True
+todasAsociadas (k:ks) m =
+  case lookupM k m of
+    Nothing -> False
+    _ -> todasAsociadas ks m
+
+
+-- Propósito: convierte una lista de pares clave valor en un map.
+listToMap :: Eq k => [(k, v)] -> Map k v
+listToMap []       = emptyM
+listToMap (kv:kvs) =
+  let (k, v) = kv in
+    assocM k v (listToMap kvs)
