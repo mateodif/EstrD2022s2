@@ -30,15 +30,56 @@ void reverseInPlace(char word[]) {
   }
 }
 
-int main(int argc, char *argv[]) {
-  cout << "hola" << endl;
-  for (int i = 0; i < argc; i++) {
-    cout << "arg " << i << " " << argv[i] << endl;
+void desdeCeroHastaN(int n){
+  if(n != 0){
+    desdeCeroHastaN(n-1);
   }
+  cout << n << "\n";
+}
 
-  char prueba[] = "prueba";
+int apariciones(char c, string s){
+  int l = s.size();
+  int res = 0;
+  for(int i = 0; i <= l; i++){
+    if(s[i] == c){
+      res++;
+    }
+  }
+  return res;
+}
 
-  cout << reverse(prueba) << endl;
+// int apariciones2(char c, string s){
+//   int n = 0;
+//   if(c == s[0]){
+//     n = 1;
+//   }
+//   return n + aparicione
+// }
 
+struct Fraccion {
+  int numerador;
+  int denominador;
+};
+
+Fraccion consFraccion(int numerador, int denominador){
+  Fraccion f;
+  f.numerador = numerador;
+  f.denominador = denominador;
+  return f;
+}
+
+int mayorDenominador(int a, int b){
+  int x = 0;
+  while(b != 0){
+    x = a;
+    a = b;
+    b = x % b;
+  }
+  return a;
+}
+
+int main(int argc, char *argv[]) {
+  int a = mayorDenominador(30, 28);
+  cout << a << "\n";
   return 0;
 }
