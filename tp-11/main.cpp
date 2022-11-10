@@ -1,5 +1,10 @@
+#include "../tp-10/ArrayList.h"
 #include "LinkedList.h"
+#include "Queue.h"
+#include "Tree.h"
 #include <iostream>
+
+// LINKED LIST USUARIO
 
 // Devuelve la suma de todos los elementos.
 int sumatoria(LinkedList xs) {
@@ -86,11 +91,62 @@ void Append(LinkedList xs, LinkedList ys) {
   DestroyL(ys);
 }
 
+// ARBOLES
+
+// Dado un árbol binario de enteros devuelve la suma entre sus elementos.
+void inOrder(Tree t) {
+  Queue q = emptyQ();
+  NodeT *current = t;
+
+  while (current != NULL || !isEmptyQ(q)) {
+    while (current != NULL) {
+      Enqueue(current->elem, q);
+      current = current->left;
+    }
+    current = firstQ(q); // no puedo meter nodos en la queue
+    Dequeue(q);
+
+    std::cout << current->elem << " ";
+    current = current->right;
+  }
+}
+
+int sumarT(Tree t) {}
+
+// Dado un árbol binario devuelve su cantidad de elementos, es decir, el tamaño
+// del árbol (size en inglés).
+int sizeT(Tree t) {}
+
+// Dados un elemento y un árbol binario devuelve True si existe un elemento
+// igual a ese en el árbol.
+bool perteneceT(int e, Tree t) {}
+
+// Dados un elemento e y un árbol binario devuelve la cantidad de elementos
+// del árbol que son iguales a e.
+int aparicionesT(int e, Tree t) {}
+
+// Dado un árbol devuelve su altura.
+int heightT(Tree t) {}
+
+// Dado un árbol devuelve una lista con todos sus elementos.
+ArrayList toList(Tree t) {}
+
+// Dado un árbol devuelve los elementos que se encuentran en sus hojas.
+ArrayList leaves(Tree t) {}
+
+// Dados un número n y un árbol devuelve una lista con los nodos de nivel n
+ArrayList levelN(int n, Tree t) {}
+
 int main(int argc, char *argv[]) {
-  LinkedList xs = nil();
-  Snoc(1, xs);
-  Snoc(2, xs);
-  Snoc(3, xs);
-  showLinkedList(xs);
+  Tree root = nodeT(1,
+                    nodeT(2,
+                          nodeT(4,
+                                NULL, NULL),
+                          NULL),
+                    nodeT(5,
+                          NULL,
+                          NULL));
+
+  inOrder(root);
   return 0;
 }

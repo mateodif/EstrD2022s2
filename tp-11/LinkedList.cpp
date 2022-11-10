@@ -100,6 +100,10 @@ void DestroyL(LinkedList xs){
   delete xs;
 }
 
+void Append(LinkedList xs, LinkedList ys){
+
+}
+
 void showLinkedList(LinkedList xs){
   ListIterator ixs = getIterator(xs);
   while(!atEnd(ixs)){
