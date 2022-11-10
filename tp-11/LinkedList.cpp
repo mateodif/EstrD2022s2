@@ -1,8 +1,6 @@
 #include "LinkedList.h"
 #include "iostream"
 
-using namespace std;
-
 // Crea una lista vacía.
 LinkedList nil() {
   LinkedList xs = new LinkedListSt;
@@ -21,22 +19,11 @@ int head(LinkedList xs) {
   return -1; // no existe el primero
 }
 
-// Aux. Crear nuevo nodo
-NodoL *createNode(int x) {
-  NodoL *node = new NodoL;
-  node->elem = x;
-  node->siguiente = NULL;
-  return node;
-}
-
 // Agrega un elemento al principio de la lista.
 void Cons(int x, LinkedList xs) {
   NodoL *n = new NodoL;
   n->elem = x;
-  if (isEmpty(xs))
-    n->siguiente = NULL;
-  else
-    n->siguiente = xs->primero;
+  n->siguiente = xs->primero;
 
   xs->primero = n;
   xs->cantidad++;
@@ -55,11 +42,19 @@ int length(LinkedList xs) { return xs->cantidad; }
 
 // Agrega un elemento al final de la lista.
 void Snoc(int x, LinkedList xs) {
-  NodoL *temp = xs->primero;
-  while (temp != NULL) {
-    temp = temp->siguiente;
+  NodoL *temp = new NodoL;
+  temp->elem = x;
+  temp->siguiente = NULL;
+
+  NodoL *actual = xs->primero;
+  if(actual == NULL){
+    xs->primero = temp;
   }
-  temp->siguiente = createNode(x);
+
+  for (int i = 0; i < xs->cantidad; i++) {
+    actual = actual->siguiente;
+  }
+  actual = temp;
   xs->cantidad++;
 }
 
@@ -77,18 +72,39 @@ int current(ListIterator ixs){
 
 // Reemplaza el elemento actual por otro elemento.
 void SetCurrent(int x, ListIterator ixs){
-    NodoL *temp = xs->primero;
-    ixs->current;
+  ixs->current->elem = x;
 }
 
 // Pasa al siguiente elemento.
-void Next(ListIterator ixs);
+void Next(ListIterator ixs){
+  ixs->current = ixs->current->siguiente;
+}
 
 // Indica si el recorrido ha terminado.
-bool atEnd(ListIterator ixs);
+bool atEnd(ListIterator ixs){
+  return ixs->current->siguiente == NULL;
+}
 
 // Libera la memoria ocupada por el iterador.
-void DisposeIterator(ListIterator ixs);
+void DisposeIterator(ListIterator ixs){
+  delete ixs;
+}
 
 // Libera la memoria ocupada por la lista.
-void DestroyL(LinkedList xs);
+void DestroyL(LinkedList xs){
+  NodoL *temp = xs->primero;
+  while (temp != NULL) {
+    delete temp;
+    temp = temp->siguiente;
+  }
+  delete xs;
+}
+
+void showLinkedList(LinkedList xs){
+  ListIterator ixs = getIterator(xs);
+  while(!atEnd(ixs)){
+    std::cout << current(ixs) << " -> ";
+    Next(ixs);
+  }
+  std::cout << "END" << std::endl;
+}
